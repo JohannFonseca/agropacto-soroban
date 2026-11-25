@@ -53,6 +53,9 @@ export default function App() {
   } | null>(null);
   const [txHistory, setTxHistory] = useState<TxReceipt[]>([]);
 
+  // Simulador interactivo de impacto economico para el cafetalero
+  const [simFanegas, setSimFanegas] = useState<number>(25);
+
   // Formulario para crear lote en Soroban (por defecto: San Ramon de Alajuela)
   const [title, setTitle] = useState(PRESET_COSTA_RICA_LOTS[0].title);
   const [region, setRegion] = useState(PRESET_COSTA_RICA_LOTS[0].region);
@@ -146,14 +149,14 @@ export default function App() {
       saveActiveSessionMeta(connected.mode, connected.role);
       setCustomBuyer(connected.counterpartyAddress);
       setBanner({
-        text: "Conectando con Soroban RPC y cargando los lotes cafetaleros de San Ramón y Valle Occidental...",
+        text: "Conectando con Soroban RPC y leyendo los lotes cafetaleros de San Ramón, Dota y Tarrazú...",
         type: "info",
       });
       await syncOnChainState(connected);
       setBanner({
         text: `Billetera Testnet activa (${shortenKey(
           connected.address
-        )}) · Podés firmar como Productor de San Ramón o como Comprador/Tostador en 1 clic.`,
+        )}) · Podés firmar como Productor o Comprador en 1 clic.`,
         type: "success",
       });
       setActiveTab("dashboard");
@@ -177,7 +180,7 @@ export default function App() {
       setBanner({
         text:
           newRole === "producer"
-            ? "Rol activo: Productor Cafetalero (San Ramón / Valle Occidental)"
+            ? "Rol activo: Finca / Productor Cafetalero (San Ramón / Valle Occidental)"
             : "Rol activo: Comprador / Microbeneficio (autorizado para fondear y liberar etapas)",
         type: "info",
       });
@@ -231,7 +234,7 @@ export default function App() {
       await syncOnChainState(session);
 
       setBanner({
-        text: `¡Lote de cosecha registrado on-chain en Soroban! Función create_lot() confirmada.`,
+        text: `¡Lote de cosecha inscrito on-chain en Soroban! Función create_lot() confirmada.`,
         type: "success",
         txUrl: receipt.explorerUrl,
       });
@@ -259,7 +262,7 @@ export default function App() {
       await syncOnChainState(session);
 
       setBanner({
-        text: `¡Lote #${lot.id} fondeado en el Smart Contract! Los ${lot.total_amount_xlm} XLM quedaron protegidos para liberarse por etapas.`,
+        text: `¡Lote #${lot.id} fondeado en el Smart Contract! Los ${lot.total_amount_xlm} XLM quedaron protegidos por etapas.`,
         type: "success",
         txUrl: receipt.explorerUrl,
       });
@@ -343,8 +346,30 @@ export default function App() {
     }
   }
 
+  // Calculos del simulador de impacto por fanega de cafe de especialidad
+  const directValueUsd = simFanegas * 290;
+  const coyoteValueUsd = Math.round(directValueUsd * 0.58);
+  const agropactoNetUsd = Math.round(directValueUsd * 0.985);
+  const extraFarmerIncome = agropactoNetUsd - coyoteValueUsd;
+
   return (
     <div>
+      {/* TOP ANNOUNCEMENT RIBBON */}
+      <div className="origin-ribbon">
+        <div className="origin-ribbon-inner">
+          <span className="ribbon-tag">
+            <span className="ribbon-dot"></span>
+            <span>
+              PROTOCOLO ACTIVO EN STELLAR SOROBAN TESTNET · PILOTO SAN RAMÓN,
+              TARRAZÚ & DOTA
+            </span>
+          </span>
+          <span className="font-mono" style={{ fontSize: "0.72rem" }}>
+            CONTRACT ID: {STELLAR_CONFIG.CONTRACT_ID}
+          </span>
+        </div>
+      </div>
+
       {/* NAVBAR */}
       <header className="navbar">
         <div className="navbar-inner">
@@ -353,7 +378,7 @@ export default function App() {
             onClick={() => setActiveTab("landing")}
             title="Volver al inicio"
           >
-            <div className="brand-badge-box">AP</div>
+            <div className="brand-seal">AP</div>
             <div>
               <span className="brand-name">
                 AgroPacto<span className="brand-dot">.</span>
@@ -385,7 +410,7 @@ export default function App() {
               rel="noopener noreferrer"
               className="nav-tab"
             >
-              Contrato en Stellar.expert ↗
+              Stellar.expert ↗
             </a>
           </nav>
 
@@ -424,7 +449,7 @@ export default function App() {
                 <div className="pill font-mono">{balanceXlm} XLM</div>
                 <button
                   type="button"
-                  className="btn btn-red-outline btn-xs"
+                  className="btn btn-outline-emerald btn-xs"
                   onClick={() =>
                     handleSwitchRole(
                       session.role === "producer" ? "buyer" : "producer"
@@ -448,7 +473,7 @@ export default function App() {
                 href={banner.txUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-red-outline btn-xs"
+                className="btn btn-outline-emerald btn-xs"
               >
                 Ver Recibo en Stellar.expert ↗
               </a>
@@ -457,24 +482,24 @@ export default function App() {
         )}
 
         {activeTab === "landing" ? (
-          /* ==================== LANDING PAGE TEMATIZADA EN SAN RAMÓN ==================== */
+          /* ==================== LANDING PAGE EDITORIAL DE PRODUCTO ==================== */
           <div>
             <section className="hero-section">
               <div>
                 <span className="kicker-badge">
-                  NACIDO EN SAN RAMÓN · ESCALABLE A COSTA RICA Y LATAM · STELLAR SOROBAN
+                  ORIGEN SAN RAMÓN DE ALAJUELA · ESCALABLE A COSTA RICA Y LATAM
                 </span>
                 <h1 className="hero-title">
-                  De las fincas de San Ramón, Tarrazú y Dota directo al tostador,
-                  sin intermediarios.
+                  De las fincas de <em>San Ramón, Tarrazú y Dota</em> directo al
+                  tostador, sin intermediarios.
                 </h1>
                 <p className="hero-lead">
-                  Inspirado en la realidad de los productores de{" "}
+                  Inspirado en la realidad de las familias cafetaleras de{" "}
                   <strong>San Ramón (Piedades Sur, Berlín, Ángeles)</strong> y diseñado
                   para escalar a todo el cinturón cafetalero de{" "}
-                  <strong>Costa Rica y Latinoamérica</strong>. Miles de familias
+                  <strong>Costa Rica y Latinoamérica</strong>. Los pequeños productores
                   necesitan liquidez meses antes de <em>la cogida</em> para abonar y
-                  cuidar la finca, pero pierden hasta el 40% de su margen ante
+                  cuidar el cafetal, pero pierden hasta el 40% de su margen ante
                   intermediarios. <strong>AgroPacto</strong> protege a la finca y al
                   comprador mediante un{" "}
                   <strong>Smart Contract de Escrow por Etapas de Cosecha en Soroban</strong>.
@@ -503,10 +528,38 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="hero-contract-panel">
+              {/* PASAPORTE DIGITAL ON-CHAIN */}
+              <div className="hero-passport">
+                <div className="passport-header">
+                  <div>
+                    <span className="passport-tag">
+                      PASAPORTE DE COSECHA ON-CHAIN · LOTE #03
+                    </span>
+                    <div className="passport-lot-title">
+                      Villa Sarchí Honey · Piedades Sur, San Ramón
+                    </div>
+                  </div>
+                  <span
+                    className="font-mono"
+                    style={{
+                      background: "rgba(52, 211, 153, 0.16)",
+                      color: "#6ee7b7",
+                      padding: "0.25rem 0.6rem",
+                      borderRadius: "999px",
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                    }}
+                  >
+                    1,450 MSNM
+                  </span>
+                </div>
+
                 <div>
-                  <span className="metric-label">
-                    SMART CONTRACT ACTIVO EN STELLAR SOROBAN TESTNET
+                  <span
+                    className="passport-tag"
+                    style={{ display: "block", marginBottom: "0.35rem" }}
+                  >
+                    SMART CONTRACT DESPLEGADO EN SOROBAN TESTNET
                   </span>
                   <div className="contract-id-box">
                     <code>{STELLAR_CONFIG.CONTRACT_ID}</code>
@@ -514,21 +567,24 @@ export default function App() {
                 </div>
 
                 <div>
-                  <span className="metric-label">
-                    LAS 3 ETAPAS DEL CICLO CAFETALERO EN EL CONTRATO
+                  <span
+                    className="passport-tag"
+                    style={{ display: "block", marginBottom: "0.4rem" }}
+                  >
+                    REGLA DE LIBERACIÓN AUTOMÁTICA POR HITOS
                   </span>
                   <div className="stage-mini-bars">
                     <div className="stage-mini-bar">
                       <strong>30%</strong>
-                      <span>01. Chapea, Sombra y Abono</span>
+                      <span>01. Abono y Sombra</span>
                     </div>
                     <div className="stage-mini-bar">
                       <strong>40%</strong>
-                      <span>02. La Cogida y Beneficio</span>
+                      <span>02. La Cogida y Secado</span>
                     </div>
                     <div className="stage-mini-bar">
                       <strong>30%</strong>
-                      <span>03. Café Oro y Catación</span>
+                      <span>03. Café Oro y Taza</span>
                     </div>
                   </div>
                 </div>
@@ -537,39 +593,127 @@ export default function App() {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    fontSize: "0.78rem",
-                    color: "var(--text-warm)",
+                    fontSize: "0.76rem",
+                    color: "rgba(255,255,255,0.72)",
                   }}
                 >
-                  <span>3 Lotes Reales en el Ledger (incl. San Ramón)</span>
-                  <span>Protegido con require_auth()</span>
+                  <span>✓ 8 Funciones Públicas en Rust</span>
+                  <span>✓ Firma Criptográfica require_auth()</span>
+                </div>
+              </div>
+            </section>
+
+            {/* SIMULADOR INTERACTIVO DE IMPACTO ECONOMICO */}
+            <div className="section-header">
+              <div>
+                <span className="eyebrow-label">
+                  IMPACTO ECONÓMICO REAL EN LA FINCA
+                </span>
+                <h2>Calculadora de Ingreso Directo vs. Intermediario ("Coyote")</h2>
+              </div>
+            </div>
+
+            <section className="comparison-panel">
+              <div>
+                <label
+                  htmlFor="fanegas-slider"
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: "0.95rem",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <span>Volumen de cosecha del productor:</span>
+                  <strong
+                    className="font-mono"
+                    style={{ color: "var(--forest-main)", fontSize: "1.1rem" }}
+                  >
+                    {simFanegas} Fanegas ({simFanegas * 46} kg Café Oro)
+                  </strong>
+                </label>
+                <input
+                  id="fanegas-slider"
+                  type="range"
+                  min={5}
+                  max={100}
+                  step={5}
+                  value={simFanegas}
+                  onChange={(e) => setSimFanegas(Number(e.target.value))}
+                  style={{
+                    width: "100%",
+                    accentColor: "var(--forest-main)",
+                    marginBottom: "1rem",
+                    padding: 0,
+                  }}
+                />
+                <p style={{ color: "var(--ink-secondary)", fontSize: "0.92rem" }}>
+                  Cuando una familia cafetalera en <strong>San Ramón o Los Santos</strong>{" "}
+                  vende su cosecha por adelantado a un intermediario informal por falta de
+                  liquidez en mayo, recibe apenas ~58% del valor final del microlote. Con
+                  el escrow por etapas de <strong>AgroPacto en Soroban</strong>, recibe
+                  liquidez desde la etapa de abono y conserva el{" "}
+                  <strong>98.5% del valor de exportación</strong> (+
+                  <strong className="font-mono" style={{ color: "var(--emerald-accent)" }}>
+                    ${extraFarmerIncome.toLocaleString("es-CR")} USD
+                  </strong>{" "}
+                  directos para la finca).
+                </p>
+              </div>
+
+              <div className="compare-bars">
+                <div className="compare-bar-box">
+                  <div className="compare-bar-header">
+                    <span>Venta Informal / Adelanto con Intermediario (58%)</span>
+                    <span className="font-mono" style={{ color: "var(--terracotta)" }}>
+                      ${coyoteValueUsd.toLocaleString("es-CR")} USD
+                    </span>
+                  </div>
+                  <div className="bar-track">
+                    <div className="bar-fill-coyote"></div>
+                  </div>
+                </div>
+
+                <div className="compare-bar-box">
+                  <div className="compare-bar-header">
+                    <span>Preventa Directa por Hitos en AgroPacto Soroban (98.5%)</span>
+                    <span
+                      className="font-mono"
+                      style={{ color: "var(--emerald-accent)" }}
+                    >
+                      ${agropactoNetUsd.toLocaleString("es-CR")} USD
+                    </span>
+                  </div>
+                  <div className="bar-track">
+                    <div className="bar-fill-agropacto"></div>
+                  </div>
                 </div>
               </div>
             </section>
 
             {/* SECCION DE ZONAS PRODUCTORAS: ORIGEN SAN RAMON -> ESCALA CR & LATAM */}
             <div className="section-header">
-              <span className="metric-label">
-                ORIGEN LOCAL Y ESCALABILIDAD REGIONAL · COSTA RICA & LATAM
-              </span>
-              <h2>De Plan Piloto en San Ramón a Estándar Cafetalero Regional</h2>
+              <div>
+                <span className="eyebrow-label">
+                  ORIGEN LOCAL Y ESCALABILIDAD REGIONAL · COSTA RICA & LATAM
+                </span>
+                <h2>De Plan Piloto en San Ramón a Estándar Cafetalero Regional</h2>
+              </div>
             </div>
 
             <section className="cards-grid-3">
               {SAN_RAMON_REGIONS.map((z, i) => (
                 <div key={i} className="feature-card">
-                  <span className="metric-label">
-                    ALTITUD: {z.altitude}
-                  </span>
+                  <span className="eyebrow-label">ALTITUD: {z.altitude}</span>
                   <h3>{z.district}</h3>
                   <p>{z.highlight}</p>
                   <div
                     style={{
                       marginTop: "auto",
-                      paddingTop: "0.65rem",
+                      paddingTop: "0.75rem",
                       borderTop: "1px dashed var(--border-strong)",
                       fontSize: "0.82rem",
-                      color: "var(--cherry-bright)",
+                      color: "var(--forest-main)",
                     }}
                   >
                     <strong>Perfil de taza:</strong> {z.profile}
@@ -579,26 +723,30 @@ export default function App() {
             </section>
 
             <div className="section-header">
-              <span className="metric-label">
-                ARQUITECTURA DEL ESCROW POR HITOS (INSPIRADO EN TRUSTLESS WORK)
-              </span>
-              <h2>¿Cómo protege el Smart Contract tanto al cafetalero como al comprador?</h2>
+              <div>
+                <span className="eyebrow-label">
+                  ARQUITECTURA DEL ESCROW POR HITOS (INSPIRADO EN TRUSTLESS WORK)
+                </span>
+                <h2>
+                  ¿Cómo protege el Smart Contract tanto al cafetalero como al comprador?
+                </h2>
+              </div>
             </div>
 
             <section className="cards-grid-3">
               <div className="feature-card">
-                <span className="metric-label">01 · CAPITAL ANTES DE LA COGIDA</span>
+                <span className="eyebrow-label">01 · CAPITAL ANTES DE LA COGIDA</span>
                 <h3>Liquidez para Abono y Mano de Obra</h3>
                 <p>
-                  En lugar de endeudarse con intereses usureros en mayo o junio, la
-                  finca en San Ramón pacta su microlote (Villa Sarchí, Caturra o
-                  Geisha) y recibe el <strong>30% inicial</strong> apenas el comprador
-                  fondea el escrow y se verifica el abonado del cafetal.
+                  En lugar de endeudarse con intereses altos en mayo o junio, la finca
+                  en San Ramón pacta su microlote (Villa Sarchí, Caturra o Geisha) y
+                  recibe el <strong>30% inicial</strong> apenas el comprador fondea el
+                  escrow y se verifica el abonado del cafetal.
                 </p>
               </div>
 
               <div className="feature-card">
-                <span className="metric-label">02 · CUSTODIA SIN CONFIANZA CIEGA</span>
+                <span className="eyebrow-label">02 · CUSTODIA SIN CONFIANZA CIEGA</span>
                 <h3>El Comprador Paga contra Cosecha Real</h3>
                 <p>
                   El tostador o importador no suelta el 100% a ciegas: el contrato
@@ -610,7 +758,7 @@ export default function App() {
               </div>
 
               <div className="feature-card">
-                <span className="metric-label">03 · RÉCORD CREDITICIO DE LA FINCA</span>
+                <span className="eyebrow-label">03 · RÉCORD CREDITICIO DE LA FINCA</span>
                 <h3>Reputación On-Chain para Exportar</h3>
                 <p>
                   Cada cosecha entregada incrementa el{" "}
@@ -628,23 +776,23 @@ export default function App() {
             <section className="metrics-strip">
               <div className="metric-card">
                 <span className="metric-label">LOTES EN EL LEDGER (ON-CHAIN)</span>
-                <div className="metric-value">{metrics.total_lots}</div>
+                <div className="metric-value font-mono">{metrics.total_lots}</div>
               </div>
               <div className="metric-card">
                 <span className="metric-label">CAPITAL CUSTODIADO EN ESCROW</span>
-                <div className="metric-value red">
+                <div className="metric-value terracotta font-mono">
                   {metrics.total_volume_locked_xlm.toFixed(2)} XLM
                 </div>
               </div>
               <div className="metric-card">
                 <span className="metric-label">LIBERADO A FINCAS CAFETALERAS</span>
-                <div className="metric-value green">
+                <div className="metric-value emerald font-mono">
                   {metrics.total_volume_released_xlm.toFixed(2)} XLM
                 </div>
               </div>
               <div className="metric-card">
                 <span className="metric-label">REPUTACIÓN DE LA FINCA</span>
-                <div className="metric-value">{producerScore} PTS</div>
+                <div className="metric-value font-mono">{producerScore} PTS</div>
               </div>
             </section>
 
@@ -653,7 +801,7 @@ export default function App() {
               <div className="panel-card">
                 <div className="panel-header">
                   <div>
-                    <span className="metric-label">
+                    <span className="eyebrow-label">
                       FUNCIÓN SOROBAN: create_lot()
                     </span>
                     <h2>Inscribir Lote de Finca / Microbeneficio</h2>
@@ -755,18 +903,22 @@ export default function App() {
 
                   <div
                     style={{
-                      background: "var(--bg-obsidian)",
+                      background: "var(--bg-parchment)",
                       border: "1px dashed var(--border-strong)",
                       borderRadius: "8px",
-                      padding: "0.75rem",
+                      padding: "0.8rem",
                       fontSize: "0.78rem",
-                      color: "var(--text-warm)",
+                      color: "var(--ink-secondary)",
                     }}
                   >
                     <strong>Tramos que bloqueará el contrato en Soroban:</strong>
                     <div
                       className="font-mono"
-                      style={{ marginTop: "0.3rem", color: "var(--text-main)" }}
+                      style={{
+                        marginTop: "0.3rem",
+                        color: "var(--forest-main)",
+                        fontWeight: 700,
+                      }}
                     >
                       • Etapa 1 Abono (30%): {(totalAmountXlm * 0.3).toFixed(2)} XLM ·
                       Etapa 2 Cogida (40%): {(totalAmountXlm * 0.4).toFixed(2)} XLM ·
@@ -803,8 +955,8 @@ export default function App() {
                         <div
                           key={i}
                           style={{
-                            background: "var(--bg-obsidian)",
-                            border: "1px solid var(--border-subtle)",
+                            background: "var(--bg-parchment)",
+                            border: "1px solid var(--border-light)",
                             borderRadius: "6px",
                             padding: "0.55rem 0.75rem",
                             display: "flex",
@@ -820,7 +972,10 @@ export default function App() {
                             href={tx.explorerUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ color: "var(--cherry-bright)" }}
+                            style={{
+                              color: "var(--forest-main)",
+                              fontWeight: 700,
+                            }}
                           >
                             {shortenKey(tx.hash)} ↗
                           </a>
@@ -835,7 +990,7 @@ export default function App() {
               <div className="panel-card">
                 <div className="panel-header">
                   <div>
-                    <span className="metric-label">
+                    <span className="eyebrow-label">
                       LECTURA EN TIEMPO REAL DESDE SOROBAN TESTNET
                     </span>
                     <h2>Lotes Cafetaleros en Escrow ({lots.length})</h2>
@@ -855,7 +1010,7 @@ export default function App() {
                     style={{
                       padding: "2.5rem 1rem",
                       textAlign: "center",
-                      color: "var(--text-warm)",
+                      color: "var(--ink-secondary)",
                       border: "1px dashed var(--border-strong)",
                       borderRadius: "10px",
                     }}
@@ -877,7 +1032,7 @@ export default function App() {
                         <div key={lot.id} className="lot-card">
                           <div className="lot-top">
                             <div>
-                              <span className="metric-label">
+                              <span className="eyebrow-label">
                                 LOTE ON-CHAIN #{lot.id} · {lot.region}
                               </span>
                               <h3 className="lot-title">{lot.title}</h3>
@@ -954,10 +1109,10 @@ export default function App() {
                                 display: "flex",
                                 justifyContent: "space-between",
                                 alignItems: "center",
-                                background: "var(--bg-card)",
+                                background: "var(--bg-surface)",
                                 padding: "0.85rem 1rem",
                                 borderRadius: "8px",
-                                border: "1px dashed var(--border-crimson)",
+                                border: "1px dashed var(--terracotta)",
                               }}
                             >
                               <span style={{ fontSize: "0.85rem" }}>
@@ -967,7 +1122,7 @@ export default function App() {
                               </span>
                               <button
                                 type="button"
-                                className="btn btn-primary btn-sm"
+                                className="btn btn-terracotta btn-sm"
                                 onClick={() => handleFundLot(lot)}
                                 disabled={Boolean(busyAction)}
                               >
@@ -1066,7 +1221,7 @@ export default function App() {
                                       <span
                                         style={{
                                           fontSize: "0.75rem",
-                                          color: "var(--text-dim)",
+                                          color: "var(--ink-muted)",
                                         }}
                                       >
                                         {lot.status === 0
