@@ -1,0 +1,16 @@
+[package]
+name = "agropacto_escrow"
+version = "1.0.0"
+edition = "2021"
+authors = ["Johann Fonseca <arielfonseca049@gmail.com>"]
+description = "Smart Contract de Escrow Agrícola y Cafetalero por Etapas de Cosecha en Stellar Soroban"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+soroban-sdk = "22.0.0"
+
+[dev-dependencies]
+soroban-sdk = { version = "22.0.0", features = ["testutils"] }
