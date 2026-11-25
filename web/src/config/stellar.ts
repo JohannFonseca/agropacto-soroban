@@ -6,8 +6,8 @@ export const STELLAR_CONFIG = {
   FRIENDBOT_URL: "https://friendbot.stellar.org",
   EXPLORER_CONTRACT_URL: "https://stellar.expert/explorer/testnet/contract",
   EXPLORER_TX_URL: "https://stellar.expert/explorer/testnet/tx",
-  // Se actualiza con el Contract ID real desplegado en Stellar Testnet
-  CONTRACT_ID: "CCAGROPACTOTESTNETPlaceholderWillBeReplacedAfterDeploy",
+  // Contract ID real desplegado en Stellar Testnet
+  CONTRACT_ID: "CB2ZCHXZW5AEWIQRKJJ7VX3I2SPOZPXAULEIE34SJUEMLNRNOADZARQG",
 };
 
 export interface HarvestStageMeta {
