@@ -81,21 +81,24 @@ export const PRESET_COSTA_RICA_LOTS = [
 
 export const SAN_RAMON_REGIONS = [
   {
-    district: "Piedades Sur & Potrerillos (San Ramón)",
-    altitude: "1,350 – 1,550 msnm",
-    profile: "Notas a panela, cacao oscuro y acidez cítrica brillante.",
-    highlight: "Zona clave de microbeneficios familiares en San Ramón.",
+    district: "Piloto Origen · San Ramón (Piedades Sur, Berlín y Ángeles)",
+    altitude: "1,350 – 1,620 msnm · Valle Occidental",
+    profile: "Villa Sarchí & Honey: panela, cacao oscuro, miel de caña y frutos rojos.",
+    highlight:
+      "Cuna del proyecto: alta densidad de microbeneficios familiares y pequeños productores independientes.",
   },
   {
-    district: "Ángeles & Berlín de San Ramón",
-    altitude: "1,400 – 1,620 msnm",
-    profile: "Cuerpo sedoso, miel de caña y frutos rojos maduros.",
-    highlight: "Clima nuboso ideal para procesos Honey y Villa Sarchí.",
+    district: "Los Santos · Tarrazú, Dota y León Cortés",
+    altitude: "1,600 – 1,950 msnm · Zona de Los Santos",
+    profile: "Geisha & Caturra SHB: acidez cítrica brillante, jazmín y taza de exportación.",
+    highlight:
+      "Región de mayor volumen de café de especialidad en Costa Rica conectada a compradores internacionales.",
   },
   {
-    district: "San Juan, Santiago & Zapotal (Occidente)",
-    altitude: "1,250 – 1,500 msnm",
-    profile: "Dulzor prolongado, chocolate con almendra y taza limpia.",
-    highlight: "Alta densidad de pequeños cafetaleros independientes.",
+    district: "Expansión Regional · Naranjo, Turrialba y Cinturón Cafetalero LATAM",
+    altitude: "1,100 – 1,800 msnm · CR, Colombia, Guatemala y Perú",
+    profile: "Trazabilidad multicosecha para café de altura y cacao fino de aroma.",
+    highlight:
+      "Mismo estándar de Escrow en Soroban escalable a cooperativas y tostadores de toda Latinoamérica.",
   },
 ];

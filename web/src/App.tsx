@@ -359,7 +359,7 @@ export default function App() {
                 AgroPacto<span className="brand-dot">.</span>
               </span>
               <span className="brand-tag">
-                San Ramón & Valle Occidental · Escrow Cafetalero en Soroban
+                Nacido en San Ramón · Escrow Cafetalero para Costa Rica & LATAM
               </span>
             </div>
           </div>
@@ -370,7 +370,7 @@ export default function App() {
               className={`nav-tab ${activeTab === "landing" ? "active" : ""}`}
               onClick={() => setActiveTab("landing")}
             >
-              San Ramón & El Problema
+              El Producto & Regiones
             </button>
             <button
               type="button"
@@ -462,21 +462,22 @@ export default function App() {
             <section className="hero-section">
               <div>
                 <span className="kicker-badge">
-                  DESDE SAN RAMÓN DE ALAJUELA PARA COSTA RICA · STELLAR SOROBAN
+                  NACIDO EN SAN RAMÓN · ESCALABLE A COSTA RICA Y LATAM · STELLAR SOROBAN
                 </span>
                 <h1 className="hero-title">
-                  Del cafetal en Piedades Sur y Berlín directo al tostador, sin
-                  intermediarios.
+                  De las fincas de San Ramón, Tarrazú y Dota directo al tostador,
+                  sin intermediarios.
                 </h1>
                 <p className="hero-lead">
-                  En zonas cafetaleras como <strong>San Ramón (Piedades Sur, Ángeles,
-                  Berlín, Santiago)</strong> y el Valle Occidental, cientos de familias
-                  productoras necesitan liquidez meses antes de <em>la cogida</em> para
-                  abonar y limpiar la finca, pero pierden hasta el 40% de su ganancia
-                  vendiendo por adelantado a intermediarios.{" "}
-                  <strong>AgroPacto</strong> conecta la finca directamente con el
-                  comprador mediante un <strong>Smart Contract de Escrow por Etapas de
-                  Cosecha en Soroban</strong>.
+                  Inspirado en la realidad de los productores de{" "}
+                  <strong>San Ramón (Piedades Sur, Berlín, Ángeles)</strong> y diseñado
+                  para escalar a todo el cinturón cafetalero de{" "}
+                  <strong>Costa Rica y Latinoamérica</strong>. Miles de familias
+                  necesitan liquidez meses antes de <em>la cogida</em> para abonar y
+                  cuidar la finca, pero pierden hasta el 40% de su margen ante
+                  intermediarios. <strong>AgroPacto</strong> protege a la finca y al
+                  comprador mediante un{" "}
+                  <strong>Smart Contract de Escrow por Etapas de Cosecha en Soroban</strong>.
                 </p>
                 <div className="hero-cta-row">
                   <button
@@ -546,12 +547,12 @@ export default function App() {
               </div>
             </section>
 
-            {/* SECCION DE ZONAS PRODUCTORAS DE SAN RAMON */}
+            {/* SECCION DE ZONAS PRODUCTORAS: ORIGEN SAN RAMON -> ESCALA CR & LATAM */}
             <div className="section-header">
               <span className="metric-label">
-                TERROIR & TRAZABILIDAD · VALLE OCCIDENTAL DE COSTA RICA
+                ORIGEN LOCAL Y ESCALABILIDAD REGIONAL · COSTA RICA & LATAM
               </span>
-              <h2>Zonas Cafetaleras de San Ramón Conectadas al Protocolo</h2>
+              <h2>De Plan Piloto en San Ramón a Estándar Cafetalero Regional</h2>
             </div>
 
             <section className="cards-grid-3">
