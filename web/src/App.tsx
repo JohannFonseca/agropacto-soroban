@@ -3,6 +3,7 @@ import {
   STELLAR_CONFIG,
   HARVEST_STAGES,
   PRESET_COSTA_RICA_LOTS,
+  SAN_RAMON_REGIONS,
 } from "./config/stellar";
 import {
   WalletSession,
@@ -52,7 +53,7 @@ export default function App() {
   } | null>(null);
   const [txHistory, setTxHistory] = useState<TxReceipt[]>([]);
 
-  // Formulario para crear lote en Soroban
+  // Formulario para crear lote en Soroban (por defecto: San Ramon de Alajuela)
   const [title, setTitle] = useState(PRESET_COSTA_RICA_LOTS[0].title);
   const [region, setRegion] = useState(PRESET_COSTA_RICA_LOTS[0].region);
   const [variety, setVariety] = useState(PRESET_COSTA_RICA_LOTS[0].variety);
@@ -71,7 +72,6 @@ export default function App() {
         setSession(restored);
         await syncOnChainState(restored);
       } else {
-        // Carga lectura publica desde el par de demo si ya fue fondeado
         try {
           await ensureDemoAccountsFunded(demoPairs.producer, demoPairs.buyer);
           const [onchainLots, onchainMetrics, score] = await Promise.all([
@@ -125,7 +125,9 @@ export default function App() {
       saveActiveSessionMeta(connected.mode, connected.role);
       await syncOnChainState(connected);
       setBanner({
-        text: `Freighter Wallet conectada (${shortenKey(connected.address)}) en Stellar Testnet.`,
+        text: `Freighter Wallet conectada (${shortenKey(
+          connected.address
+        )}) en Stellar Testnet.`,
         type: "success",
       });
       setActiveTab("dashboard");
@@ -144,14 +146,14 @@ export default function App() {
       saveActiveSessionMeta(connected.mode, connected.role);
       setCustomBuyer(connected.counterpartyAddress);
       setBanner({
-        text: "Verificando fondeo en Friendbot y sincronizando estado del Smart Contract en Soroban Testnet...",
+        text: "Conectando con Soroban RPC y cargando los lotes cafetaleros de San Ramón y Valle Occidental...",
         type: "info",
       });
       await syncOnChainState(connected);
       setBanner({
-        text: `Billetera Testnet lista (${shortenKey(
+        text: `Billetera Testnet activa (${shortenKey(
           connected.address
-        )}) con Productor y Comprador configurados para firmar en Soroban.`,
+        )}) · Podés firmar como Productor de San Ramón o como Comprador/Tostador en 1 clic.`,
         type: "success",
       });
       setActiveTab("dashboard");
@@ -175,8 +177,8 @@ export default function App() {
       setBanner({
         text:
           newRole === "producer"
-            ? "Rol activo cambiado a: Productor Cafetalero / Agrícola"
-            : "Rol activo cambiado a: Comprador / Tostador (listo para fondear y liberar etapas)",
+            ? "Rol activo: Productor Cafetalero (San Ramón / Valle Occidental)"
+            : "Rol activo: Comprador / Microbeneficio (autorizado para fondear y liberar etapas)",
         type: "info",
       });
     } else {
@@ -211,7 +213,7 @@ export default function App() {
     try {
       setBusyAction("create_lot");
       setBanner({
-        text: "Invocando create_lot() en el Smart Contract de Soroban Testnet...",
+        text: "Firmando e invocando create_lot() en el Smart Contract de Soroban Testnet...",
         type: "info",
       });
 
@@ -229,7 +231,7 @@ export default function App() {
       await syncOnChainState(session);
 
       setBanner({
-        text: `¡Lote creado on-chain en Soroban! Función create_lot() confirmada.`,
+        text: `¡Lote de cosecha registrado on-chain en Soroban! Función create_lot() confirmada.`,
         type: "success",
         txUrl: receipt.explorerUrl,
       });
@@ -248,7 +250,7 @@ export default function App() {
     try {
       setBusyAction(`fund_${lot.id}`);
       setBanner({
-        text: `Invocando fund_lot(#${lot.id}) en Soroban Testnet (${lot.total_amount_xlm} XLM protegidos en escrow)...`,
+        text: `Invocando fund_lot(#${lot.id}) en Soroban Testnet (${lot.total_amount_xlm} XLM custodiados en el contrato)...`,
         type: "info",
       });
 
@@ -257,7 +259,7 @@ export default function App() {
       await syncOnChainState(session);
 
       setBanner({
-        text: `¡Lote #${lot.id} fondeado en el Smart Contract! Los ${lot.total_amount_xlm} XLM quedaron bloqueados por etapas.`,
+        text: `¡Lote #${lot.id} fondeado en el Smart Contract! Los ${lot.total_amount_xlm} XLM quedaron protegidos para liberarse por etapas.`,
         type: "success",
         txUrl: receipt.explorerUrl,
       });
@@ -277,7 +279,7 @@ export default function App() {
     try {
       setBusyAction(`submit_${lot.id}_${stageNumber}`);
       setBanner({
-        text: `Registrando avance on-chain submit_stage(#${lot.id}, Etapa ${stageNumber}) en Soroban...`,
+        text: `Registrando bitácora de finca submit_stage(#${lot.id}, Etapa ${stageNumber}) en Soroban...`,
         type: "info",
       });
 
@@ -292,7 +294,7 @@ export default function App() {
       await syncOnChainState(session);
 
       setBanner({
-        text: `¡Evidencia de la Etapa ${stageNumber} registrada on-chain por el productor! Lista para liberación.`,
+        text: `¡Bitácora de la Etapa ${stageNumber} registrada on-chain! Lista para que el comprador libere el pago.`,
         type: "success",
         txUrl: receipt.explorerUrl,
       });
@@ -316,7 +318,7 @@ export default function App() {
     try {
       setBusyAction(`release_${lot.id}_${stageNumber}`);
       setBanner({
-        text: `Invocando approve_and_release(#${lot.id}, Etapa ${stageNumber}) para liberar ${trancheXlm} XLM (${meta.percentage}%)...`,
+        text: `Invocando approve_and_release(#${lot.id}, Etapa ${stageNumber}) para liberar ${trancheXlm} XLM (${meta.percentage}%) a la finca...`,
         type: "info",
       });
 
@@ -330,7 +332,7 @@ export default function App() {
       await syncOnChainState(session);
 
       setBanner({
-        text: `¡Etapa ${stageNumber} liberada on-chain! El productor recibió ${trancheXlm} XLM y subió su reputación.`,
+        text: `¡Etapa ${stageNumber} liquidada on-chain! La finca recibió ${trancheXlm} XLM y subió su Reputación Cafetalera.`,
         type: "success",
         txUrl: receipt.explorerUrl,
       });
@@ -357,7 +359,7 @@ export default function App() {
                 AgroPacto<span className="brand-dot">.</span>
               </span>
               <span className="brand-tag">
-                Preventa & Escrow de Cosechas en Soroban
+                San Ramón & Valle Occidental · Escrow Cafetalero en Soroban
               </span>
             </div>
           </div>
@@ -368,14 +370,14 @@ export default function App() {
               className={`nav-tab ${activeTab === "landing" ? "active" : ""}`}
               onClick={() => setActiveTab("landing")}
             >
-              El Producto & Problema
+              San Ramón & El Problema
             </button>
             <button
               type="button"
               className={`nav-tab ${activeTab === "dashboard" ? "active" : ""}`}
               onClick={() => setActiveTab("dashboard")}
             >
-              App / Escrow en Vivo ({lots.length})
+              Microbeneficio On-Chain ({lots.length})
             </button>
             <a
               href={`${STELLAR_CONFIG.EXPLORER_CONTRACT_URL}/${STELLAR_CONFIG.CONTRACT_ID}`}
@@ -413,7 +415,9 @@ export default function App() {
                 <div className="pill">
                   <span className="dot-live"></span>
                   <strong>
-                    {session.role === "producer" ? "PRODUCTOR" : "COMPRADOR"}
+                    {session.role === "producer"
+                      ? "FINCA / PRODUCTOR"
+                      : "COMPRADOR / TOSTADOR"}
                   </strong>
                   <code>{shortenKey(session.address)}</code>
                 </div>
@@ -446,30 +450,33 @@ export default function App() {
                 rel="noopener noreferrer"
                 className="btn btn-red-outline btn-xs"
               >
-                Ver Transacción en Stellar.expert ↗
+                Ver Recibo en Stellar.expert ↗
               </a>
             )}
           </div>
         )}
 
         {activeTab === "landing" ? (
-          /* ==================== LANDING PAGE DE PRODUCTO ==================== */
+          /* ==================== LANDING PAGE TEMATIZADA EN SAN RAMÓN ==================== */
           <div>
             <section className="hero-section">
               <div>
                 <span className="kicker-badge">
-                  STELLAR SOROBAN SMART CONTRACT · CAMPAMENTO 02 (TRUSTLESS WORK)
+                  DESDE SAN RAMÓN DE ALAJUELA PARA COSTA RICA · STELLAR SOROBAN
                 </span>
                 <h1 className="hero-title">
-                  Financiamiento directo de cosechas por etapas, sin coyotes ni
-                  bancos lentos.
+                  Del cafetal en Piedades Sur y Berlín directo al tostador, sin
+                  intermediarios.
                 </h1>
                 <p className="hero-lead">
-                  En Costa Rica y Latinoamérica, los pequeños productores de café y
-                  cacao necesitan capital antes de la cosecha y pierden hasta el 40%
-                  de su margen con intermediarios. <strong>AgroPacto</strong>{" "}
-                  protege al productor y al comprador mediante un contrato
-                  inteligente de <strong>Escrow por Hitos en Soroban</strong>.
+                  En zonas cafetaleras como <strong>San Ramón (Piedades Sur, Ángeles,
+                  Berlín, Santiago)</strong> y el Valle Occidental, cientos de familias
+                  productoras necesitan liquidez meses antes de <em>la cogida</em> para
+                  abonar y limpiar la finca, pero pierden hasta el 40% de su ganancia
+                  vendiendo por adelantado a intermediarios.{" "}
+                  <strong>AgroPacto</strong> conecta la finca directamente con el
+                  comprador mediante un <strong>Smart Contract de Escrow por Etapas de
+                  Cosecha en Soroban</strong>.
                 </p>
                 <div className="hero-cta-row">
                   <button
@@ -483,7 +490,7 @@ export default function App() {
                       }
                     }}
                   >
-                    Abrir Plataforma AgroPacto →
+                    Entrar al Microbeneficio On-Chain →
                   </button>
                   <button
                     type="button"
@@ -498,7 +505,7 @@ export default function App() {
               <div className="hero-contract-panel">
                 <div>
                   <span className="metric-label">
-                    SMART CONTRACT DESPLEGADO EN STELLAR TESTNET
+                    SMART CONTRACT ACTIVO EN STELLAR SOROBAN TESTNET
                   </span>
                   <div className="contract-id-box">
                     <code>{STELLAR_CONFIG.CONTRACT_ID}</code>
@@ -507,20 +514,20 @@ export default function App() {
 
                 <div>
                   <span className="metric-label">
-                    REGLA DE LIBERACIÓN AUTOMÁTICA ON-CHAIN (3 HITOS)
+                    LAS 3 ETAPAS DEL CICLO CAFETALERO EN EL CONTRATO
                   </span>
                   <div className="stage-mini-bars">
                     <div className="stage-mini-bar">
                       <strong>30%</strong>
-                      <span>01. Siembra e Insumos</span>
+                      <span>01. Chapea, Sombra y Abono</span>
                     </div>
                     <div className="stage-mini-bar">
                       <strong>40%</strong>
-                      <span>02. Cosecha y Beneficio</span>
+                      <span>02. La Cogida y Beneficio</span>
                     </div>
                     <div className="stage-mini-bar">
                       <strong>30%</strong>
-                      <span>03. Entrega y Catación</span>
+                      <span>03. Café Oro y Catación</span>
                     </div>
                   </div>
                 </div>
@@ -529,52 +536,86 @@ export default function App() {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    fontSize: "0.8rem",
+                    fontSize: "0.78rem",
                     color: "var(--text-warm)",
                   }}
                 >
-                  <span>8 Funciones Públicas en Rust</span>
-                  <span>Autorización Criptográfica require_auth()</span>
+                  <span>3 Lotes Reales en el Ledger (incl. San Ramón)</span>
+                  <span>Protegido con require_auth()</span>
                 </div>
               </div>
             </section>
 
+            {/* SECCION DE ZONAS PRODUCTORAS DE SAN RAMON */}
             <div className="section-header">
-              <span className="metric-label">EL PROBLEMA EN LATAM Y LA SOLUCIÓN</span>
-              <h2>¿Por qué un Smart Contract en Soroban cambia las reglas?</h2>
+              <span className="metric-label">
+                TERROIR & TRAZABILIDAD · VALLE OCCIDENTAL DE COSTA RICA
+              </span>
+              <h2>Zonas Cafetaleras de San Ramón Conectadas al Protocolo</h2>
+            </div>
+
+            <section className="cards-grid-3">
+              {SAN_RAMON_REGIONS.map((z, i) => (
+                <div key={i} className="feature-card">
+                  <span className="metric-label">
+                    ALTITUD: {z.altitude}
+                  </span>
+                  <h3>{z.district}</h3>
+                  <p>{z.highlight}</p>
+                  <div
+                    style={{
+                      marginTop: "auto",
+                      paddingTop: "0.65rem",
+                      borderTop: "1px dashed var(--border-strong)",
+                      fontSize: "0.82rem",
+                      color: "var(--cherry-bright)",
+                    }}
+                  >
+                    <strong>Perfil de taza:</strong> {z.profile}
+                  </div>
+                </div>
+              ))}
+            </section>
+
+            <div className="section-header">
+              <span className="metric-label">
+                ARQUITECTURA DEL ESCROW POR HITOS (INSPIRADO EN TRUSTLESS WORK)
+              </span>
+              <h2>¿Cómo protege el Smart Contract tanto al cafetalero como al comprador?</h2>
             </div>
 
             <section className="cards-grid-3">
               <div className="feature-card">
-                <span className="metric-label">01 · EL DOLOR DEL PRODUCTOR</span>
-                <h3>Adiós al intermediario ("Coyote")</h3>
+                <span className="metric-label">01 · CAPITAL ANTES DE LA COGIDA</span>
+                <h3>Liquidez para Abono y Mano de Obra</h3>
                 <p>
-                  Los bancos tradicionales exigen hipotecas y tardan meses en
-                  aprobar crédito agrícola. Con AgroPacto, el comprador o tostador
-                  preventa el lote directamente con la finca y el productor recibe
-                  el 30% desde la etapa de fertilización y poda.
+                  En lugar de endeudarse con intereses usureros en mayo o junio, la
+                  finca en San Ramón pacta su microlote (Villa Sarchí, Caturra o
+                  Geisha) y recibe el <strong>30% inicial</strong> apenas el comprador
+                  fondea el escrow y se verifica el abonado del cafetal.
                 </p>
               </div>
 
               <div className="feature-card">
-                <span className="metric-label">02 · LA SEGURIDAD DEL COMPRADOR</span>
-                <h3>Escrow por Hitos sin Confianza Ciega</h3>
+                <span className="metric-label">02 · CUSTODIA SIN CONFIANZA CIEGA</span>
+                <h3>El Comprador Paga contra Cosecha Real</h3>
                 <p>
-                  El comprador no arriesga el 100% por adelantado en una
-                  transferencia bancaria sin garantía. El contrato inteligente en
-                  Soroban custodia el capital y solo libera cada tramo (30% → 40% →
-                  30%) cuando se registra y aprueba el avance real de la cosecha.
+                  El tostador o importador no suelta el 100% a ciegas: el contrato
+                  inteligente retiene los fondos en Soroban y libera el{" "}
+                  <strong>40% durante la cogida y secado en camas</strong> (11% de
+                  humedad) y el <strong>30% final</strong> al recibir los sacos
+                  GrainPro catados.
                 </p>
               </div>
 
               <div className="feature-card">
-                <span className="metric-label">03 · REPUTACIÓN AGRÍCOLA ON-CHAIN</span>
-                <h3>Historial Crediticio Verificable</h3>
+                <span className="metric-label">03 · RÉCORD CREDITICIO DE LA FINCA</span>
+                <h3>Reputación On-Chain para Exportar</h3>
                 <p>
-                  Cada etapa cumplida incrementa automáticamente el{" "}
-                  <code>ProducerScore</code> del agricultor en el almacenamiento
-                  persistente de Soroban, creando un récord inmutable de entregas a
-                  tiempo para acceder a mejores precios internacionales.
+                  Cada cosecha entregada incrementa el{" "}
+                  <code>ProducerScore</code> de la finca en el storage persistente de
+                  Soroban, construyendo una identidad verificable para negociar mejores
+                  precios por quintal cada temporada.
                 </p>
               </div>
             </section>
@@ -585,23 +626,23 @@ export default function App() {
             {/* STRIP DE METRICAS ON-CHAIN */}
             <section className="metrics-strip">
               <div className="metric-card">
-                <span className="metric-label">LOTES REGISTRADOS (ON-CHAIN)</span>
+                <span className="metric-label">LOTES EN EL LEDGER (ON-CHAIN)</span>
                 <div className="metric-value">{metrics.total_lots}</div>
               </div>
               <div className="metric-card">
-                <span className="metric-label">CAPITAL PROTEGIDO EN ESCROW</span>
+                <span className="metric-label">CAPITAL CUSTODIADO EN ESCROW</span>
                 <div className="metric-value red">
                   {metrics.total_volume_locked_xlm.toFixed(2)} XLM
                 </div>
               </div>
               <div className="metric-card">
-                <span className="metric-label">CAPITAL LIBERADO A FINCAS</span>
+                <span className="metric-label">LIBERADO A FINCAS CAFETALERAS</span>
                 <div className="metric-value green">
                   {metrics.total_volume_released_xlm.toFixed(2)} XLM
                 </div>
               </div>
               <div className="metric-card">
-                <span className="metric-label">REPUTACIÓN DEL PRODUCTOR</span>
+                <span className="metric-label">REPUTACIÓN DE LA FINCA</span>
                 <div className="metric-value">{producerScore} PTS</div>
               </div>
             </section>
@@ -614,7 +655,7 @@ export default function App() {
                     <span className="metric-label">
                       FUNCIÓN SOROBAN: create_lot()
                     </span>
-                    <h2>Publicar Nuevo Lote de Cosecha</h2>
+                    <h2>Inscribir Lote de Finca / Microbeneficio</h2>
                   </div>
                   <div className="preset-chips">
                     {PRESET_COSTA_RICA_LOTS.map((p, idx) => (
@@ -630,7 +671,13 @@ export default function App() {
                           setTotalAmountXlm(p.totalAmountXlm);
                         }}
                       >
-                        Lote #{idx + 1}
+                        {idx === 0
+                          ? "Piedades Sur (San Ramón)"
+                          : idx === 1
+                          ? "Berlín (San Ramón)"
+                          : idx === 2
+                          ? "Occidente Geisha"
+                          : "Tarrazú"}
                       </button>
                     ))}
                   </div>
@@ -638,7 +685,7 @@ export default function App() {
 
                 <form className="form-stack" onSubmit={handleCreateLot}>
                   <div className="field-group">
-                    <label>Nombre del Lote / Finca</label>
+                    <label>Nombre del Lote y Finca</label>
                     <input
                       type="text"
                       value={title}
@@ -649,7 +696,7 @@ export default function App() {
 
                   <div className="field-row">
                     <div className="field-group">
-                      <label>Región Productora</label>
+                      <label>Distrito / Región Cafetalera</label>
                       <input
                         type="text"
                         value={region}
@@ -658,7 +705,7 @@ export default function App() {
                       />
                     </div>
                     <div className="field-group">
-                      <label>Variedad y Proceso</label>
+                      <label>Variedad y Beneficiado</label>
                       <input
                         type="text"
                         value={variety}
@@ -670,7 +717,7 @@ export default function App() {
 
                   <div className="field-row">
                     <div className="field-group">
-                      <label>Volumen del Lote (kg)</label>
+                      <label>Volumen del Lote (kg Café Oro)</label>
                       <input
                         type="number"
                         className="font-mono"
@@ -681,7 +728,7 @@ export default function App() {
                       />
                     </div>
                     <div className="field-group">
-                      <label>Valor Total del Escrow (XLM)</label>
+                      <label>Valor Pactado en Escrow (XLM)</label>
                       <input
                         type="number"
                         className="font-mono"
@@ -715,14 +762,14 @@ export default function App() {
                       color: "var(--text-warm)",
                     }}
                   >
-                    <strong>Desglose automático en el contrato Soroban:</strong>
+                    <strong>Tramos que bloqueará el contrato en Soroban:</strong>
                     <div
                       className="font-mono"
                       style={{ marginTop: "0.3rem", color: "var(--text-main)" }}
                     >
-                      • Etapa 1 (30%): {(totalAmountXlm * 0.3).toFixed(2)} XLM ·
-                      Etapa 2 (40%): {(totalAmountXlm * 0.4).toFixed(2)} XLM ·
-                      Etapa 3 (30%): {(totalAmountXlm * 0.3).toFixed(2)} XLM
+                      • Etapa 1 Abono (30%): {(totalAmountXlm * 0.3).toFixed(2)} XLM ·
+                      Etapa 2 Cogida (40%): {(totalAmountXlm * 0.4).toFixed(2)} XLM ·
+                      Etapa 3 Café Oro (30%): {(totalAmountXlm * 0.3).toFixed(2)} XLM
                     </div>
                   </div>
 
@@ -733,7 +780,7 @@ export default function App() {
                   >
                     {busyAction === "create_lot"
                       ? "Firmando create_lot() en Soroban Testnet..."
-                      : "Registrar Lote en Smart Contract Soroban"}
+                      : "Inscribir Lote en Smart Contract Soroban"}
                   </button>
                 </form>
 
@@ -741,7 +788,7 @@ export default function App() {
                 {txHistory.length > 0 && (
                   <div style={{ marginTop: "1.5rem" }}>
                     <span className="metric-label">
-                      TRANSACCIONES ENVIADAS A SOROBAN RPC
+                      TRANSACCIONES FIRMADAS EN SOROBAN RPC
                     </span>
                     <div
                       style={{
@@ -788,9 +835,9 @@ export default function App() {
                 <div className="panel-header">
                   <div>
                     <span className="metric-label">
-                      ESTADO EN VIVO DESDE SOROBAN TESTNET
+                      LECTURA EN TIEMPO REAL DESDE SOROBAN TESTNET
                     </span>
-                    <h2>Escrows de Cosecha Activos ({lots.length})</h2>
+                    <h2>Lotes Cafetaleros en Escrow ({lots.length})</h2>
                   </div>
                   <button
                     type="button"
@@ -798,7 +845,7 @@ export default function App() {
                     onClick={() => session && syncOnChainState(session)}
                     disabled={Boolean(busyAction)}
                   >
-                    Sincronizar con Soroban RPC
+                    Sincronizar Ledger
                   </button>
                 </div>
 
@@ -812,8 +859,8 @@ export default function App() {
                       borderRadius: "10px",
                     }}
                   >
-                    Conectá tu billetera o creá el primer lote a la izquierda para
-                    interactuar con el contrato en Soroban Testnet.
+                    Conectá tu billetera arriba para cargar los lotes desde Soroban
+                    Testnet.
                   </div>
                 ) : (
                   <div className="lots-stack">
@@ -841,8 +888,7 @@ export default function App() {
                                   Volumen: <strong>{lot.quantity_kg} kg</strong>
                                 </span>
                                 <span>
-                                  Productor:{" "}
-                                  <code>{shortenKey(lot.producer)}</code>
+                                  Finca: <code>{shortenKey(lot.producer)}</code>
                                 </span>
                                 <span>
                                   Comprador: <code>{shortenKey(lot.buyer)}</code>
@@ -858,12 +904,12 @@ export default function App() {
                               )}
                               {lot.status >= 1 && lot.status < 4 && (
                                 <span className="status-badge status-funded">
-                                  ESCROW ACTIVO · {pctReleased}% LIBERADO
+                                  EN COSECHA · {pctReleased}% LIBERADO
                                 </span>
                               )}
                               {lot.status === 4 && (
                                 <span className="status-badge status-completed">
-                                  100% LIQUIDADO ({lot.total_amount_xlm} XLM)
+                                  COSECHA 100% LIQUIDADA ({lot.total_amount_xlm} XLM)
                                 </span>
                               )}
                             </div>
@@ -880,13 +926,13 @@ export default function App() {
                               }}
                             >
                               <span>
-                                Liberado al productor:{" "}
+                                Liberado a la finca:{" "}
                                 <strong className="font-mono">
                                   {lot.released_amount_xlm.toFixed(2)} XLM
                                 </strong>
                               </span>
                               <span>
-                                Total del Contrato:{" "}
+                                Total del Escrow:{" "}
                                 <strong className="font-mono">
                                   {lot.total_amount_xlm.toFixed(2)} XLM
                                 </strong>
@@ -914,9 +960,9 @@ export default function App() {
                               }}
                             >
                               <span style={{ fontSize: "0.85rem" }}>
-                                Paso 1: El comprador bloquea los{" "}
+                                Paso 1: El comprador deposita los{" "}
                                 <strong>{lot.total_amount_xlm} XLM</strong> en el
-                                contrato de Soroban.
+                                escrow de Soroban.
                               </span>
                               <button
                                 type="button"
@@ -971,7 +1017,7 @@ export default function App() {
                                     </h4>
                                     <div className="stage-note">
                                       {note !== "Pendiente"
-                                        ? `Bitácora On-Chain: "${note}"`
+                                        ? `Bitácora de Finca: "${note}"`
                                         : stage.subtitle}
                                     </div>
                                   </div>
@@ -979,7 +1025,7 @@ export default function App() {
                                   <div className="stage-actions">
                                     {isReleased ? (
                                       <span className="status-badge status-completed">
-                                        LIBERADO ({stageXlm} XLM)
+                                        LIQUIDADO ({stageXlm} XLM)
                                       </span>
                                     ) : canAct ? (
                                       <>
@@ -994,8 +1040,8 @@ export default function App() {
                                           >
                                             {busyAction ===
                                             `submit_${lot.id}_${stage.number}`
-                                              ? "Enviando..."
-                                              : "1. Reportar Avance (Productor)"}
+                                              ? "Guardando..."
+                                              : "1. Reportar Bitácora (Finca)"}
                                           </button>
                                         )}
                                         <button
@@ -1046,11 +1092,12 @@ export default function App() {
       <footer className="footer">
         <div className="footer-inner">
           <span>
-            <strong>AgroPacto.</strong> · Desarrollado por Johann Fonseca
+            <strong>AgroPacto.</strong> · Desarrollado por Johann Fonseca (San Ramón,
+            Costa Rica)
           </span>
           <span>
-            Campamento 02 (Contratos Inteligentes en Soroban · Trustless Work) ·
-            Contract ID: <code>{shortenKey(STELLAR_CONFIG.CONTRACT_ID)}</code>
+            Campamento 02 (Soroban · Trustless Work) · Contract ID:{" "}
+            <code>{shortenKey(STELLAR_CONFIG.CONTRACT_ID)}</code>
           </span>
         </div>
       </footer>

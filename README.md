@@ -19,12 +19,14 @@
 | **Tx `fund_lot` (#1)** | [`707d112872e543fe6327803e18c943a7717976b4b3831e66d51ccc0d6c7d1489`](https://stellar.expert/explorer/testnet/tx/707d112872e543fe6327803e18c943a7717976b4b3831e66d51ccc0d6c7d1489) |
 | **Tx `submit_stage` (Etapa 1)** | [`a353fa26ef4cfc1ae557ef50eea9106b2b37d9a1b0539ae36cdc0ec55ea0dfb1`](https://stellar.expert/explorer/testnet/tx/a353fa26ef4cfc1ae557ef50eea9106b2b37d9a1b0539ae36cdc0ec55ea0dfb1) |
 | **Tx `approve_and_release` (30%)** | [`a956d480413e2f0b11e37737ea08b7fb8b156490aca5e7df0a0cdd4fcf4f7a6a`](https://stellar.expert/explorer/testnet/tx/a956d480413e2f0b11e37737ea08b7fb8b156490aca5e7df0a0cdd4fcf4f7a6a) |
+| **Tx `create_lot` (#3 · San Ramón)** | [`19b912f905361690345680f974cf62d3aeb4e48fcb3622b1a6f41241ab9746d9`](https://stellar.expert/explorer/testnet/tx/19b912f905361690345680f974cf62d3aeb4e48fcb3622b1a6f41241ab9746d9) |
+| **Tx `approve_and_release` (#3 · San Ramón Etapa 2)** | [`ce4cf43bcf4ca6bc81a8368f35dfb6cfa33ce1b1cde4f29f558c9318a5924be5`](https://stellar.expert/explorer/testnet/tx/ce4cf43bcf4ca6bc81a8368f35dfb6cfa33ce1b1cde4f29f558c9318a5924be5) |
 
 ---
 
-## 💡 El Problema Real que Resuelve AgroPacto
+## 💡 El Problema Real en San Ramón y el Valle Occidental que Resuelve AgroPacto
 
-En Costa Rica y Latinoamérica, los pequeños y medianos productores de café de especialidad y cacao necesitan capital de trabajo meses antes de la cosecha (para fertilización orgánica, poda y mano de obra). Al no tener acceso ágil a crédito bancario, terminan vendiendo su cosecha por adelantado a intermediarios (*"coyotes"*) perdiendo hasta un 40% de su margen. Por otro lado, los compradores y tostadores temen enviar el 100% del pago por adelantado mediante transferencia bancaria sin garantías de cumplimiento.
+En zonas cafetaleras históricas de Costa Rica como **San Ramón de Alajuela (Piedades Sur, Ángeles, Berlín, Santiago, San Juan)** y el Valle Occidental, cientos de familias productoras de café de especialidad (*Villa Sarchí, Caturra, Geisha*) necesitan capital de trabajo meses antes de *la cogida* (para abono orgánico, chapea, regulación de sombra de poró y mano de obra). Al no tener acceso ágil a crédito bancario, terminan vendiendo su cosecha por adelantado a intermediarios (*"coyotes"*) perdiendo hasta un 40% de su margen. Por otro lado, los compradores y tostadores temen enviar el 100% del pago por adelantado mediante transferencia bancaria sin garantías de cumplimiento.
 
 **AgroPacto** elimina al intermediario mediante un **Smart Contract de Escrow por Hitos de Cosecha en Soroban**:
 1. **Etapa 01 · Siembra, Poda e Insumos (30%):** Capital inicial liberado al registrar la preparación de la finca.
